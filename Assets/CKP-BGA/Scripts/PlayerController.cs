@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     void Update ()
     {
         Vector3 vNow = this.rigidbody.velocity;
-        if (vNow.magnitude < 0.005) {
+        if (vNow.magnitude < 0.001) {
             isMoving = false;
         }
 
@@ -57,15 +57,18 @@ public class PlayerController : MonoBehaviour
 
     void OnCollisionEnter(Collision other) {
         if (other.gameObject.tag.Equals("Wall")) {
+//            Vector3 tempV = this.rigidbody.velocity;
+//            this.rigidbody.velocity = Vector3.Reflect(tempV, transform.norm);
             this.rigidbody.velocity = Vector3.zero;
             //this.rigidbody.isKinematic = true;
         }
     }
-    public void move(float power)
+    public void move(float power, bool isFinish)
     {
-        isMoving = true;
-        Vector3 impulse = this.transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, 0, this.rigidbody.mass * power));
-        this.rigidbody.AddForce (impulse, ForceMode.Impulse);
-
+        if (!isFinish) {
+            isMoving = true;
+            Vector3 impulse = this.transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, 0, this.rigidbody.mass * power));
+            this.rigidbody.AddForce (impulse, ForceMode.Impulse);
+        }
     }
 }
