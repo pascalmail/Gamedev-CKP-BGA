@@ -9,8 +9,9 @@ public class PowerBarController : MonoBehaviour {
 
     void OnGUI()
     {   
-        GUI.Box (new Rect (0, 0, image.width, image.height), "POWER");
+        GUI.Box (new Rect (0, 0, image.width+10, image.height), "POWER");
         float filledWidth = pController.power / PlayerController.MAX_POWER * image.width;
-        GUI.DrawTextureWithTexCoords (new Rect (5, 5, filledWidth, 20), image, new Rect (0, 0, (float)(filledWidth / image.width), 1));
+        GUI.DrawTextureWithTexCoords (new Rect (5, image.height*0.5f, filledWidth, 20), image, new Rect (0, 0, (float)(filledWidth / image.width), 1));
+        print (pController.power);
     }
 }

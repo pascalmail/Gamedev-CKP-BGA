@@ -3,6 +3,7 @@ using System.Collections;
 
 public class PlayerController : MonoBehaviour
 {
+//    public enum PlayerState {CHARGING, MOVING};
 
     public const float MAX_POWER = 60;
     public float power;
@@ -27,8 +28,16 @@ public class PlayerController : MonoBehaviour
                 isCharging = false;
                 Vector3 impulse = this.transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, 0, this.rigidbody.mass * power));
                 this.rigidbody.AddForce (impulse, ForceMode.Impulse);
+                isMoving = true;
+            }
+        } else {
+            Vector3 vNow = this.rigidbody.velocity;
+            if (vNow.magnitude < 0.001) {
+                this.rigidbody.velocity = Vector3.zero;
+                isMoving= false;
             }
         }
+
         if (isCharging) {
             power += MAX_POWER * Time.deltaTime;
             if (power > MAX_POWER) {
@@ -53,6 +62,7 @@ public class PlayerController : MonoBehaviour
     void OnCollisionEnter(Collision other) {
         if (other.gameObject.tag.Equals("Wall")) {
             this.rigidbody.velocity = Vector3.zero;
+            isMoving = false;
             //this.rigidbody.isKinematic = true;
         }
     }

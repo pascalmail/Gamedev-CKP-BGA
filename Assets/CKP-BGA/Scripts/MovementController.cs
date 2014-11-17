@@ -13,6 +13,7 @@ public class MovementController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        // rotate wheel
 	    foreach (Transform child in transform) {
             if (child.name.Contains("Wheel")) {
                 child.Rotate(new Vector3(0,-1,0) * Time.deltaTime * 90);
