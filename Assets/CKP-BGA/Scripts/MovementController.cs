@@ -24,11 +24,13 @@ public class MovementController : MonoBehaviour {
 
     void OnTriggerEnter(Collider other) {
         win = true;
-        if (Application.loadedLevelName == "GameplayTester") {
-            Application.LoadLevel("Level 1");
-        }
-        if (Application.loadedLevelName == "Level 1") {
-            Application.LoadLevel("Level 2");
+        if (other.tag == "FinishArea") {
+            if (Application.loadedLevelName == "GameplayTester") {
+                Application.LoadLevel ("Level 1");
+            }
+            if (Application.loadedLevelName == "Level 1") {
+                Application.LoadLevel ("Level 2");
+            }
         }
     }
 

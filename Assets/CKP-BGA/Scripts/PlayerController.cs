@@ -9,7 +9,9 @@ public class PlayerController : MonoBehaviour
     public float power;
     public bool isCharging;
     public bool isMoving;
-
+    public float speedx;
+    public float speedy;
+    public float speedz;
 
     void Start ()
     {
@@ -47,6 +49,10 @@ public class PlayerController : MonoBehaviour
         } else {
             power = 0;
         }
+        Vector3 tmp = this.transform.localToWorldMatrix.MultiplyVector (this.rigidbody.velocity);
+        speedx = tmp.x;
+        speedy = tmp.y;
+        speedz = tmp.z;
     }
 
 
@@ -65,5 +71,12 @@ public class PlayerController : MonoBehaviour
             isMoving = false;
             //this.rigidbody.isKinematic = true;
         }
+        if (other.gameObject.tag.Equals ("Wind")) {
+            this.rigidbody.AddForce(new Vector3(0, this.rigidbody.mass * 20, 0), ForceMode.Impulse);
+            print("AW");
+        }
+
+    }
+    void OnTriggerEnter(Collider other) {
     }
 }
