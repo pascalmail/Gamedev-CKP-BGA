@@ -8,19 +8,61 @@ public class PlayerController : MonoBehaviour
     public float power;
     public bool isCharging;
     public bool isMoving;
+    public GameObject destination;
+
+    private NavMeshAgent _agent;
+    private Vector3 nextTarget;
+    private bool hasNextTarget;
+    private bool rotate;
+    private float angle;
+    private float rotation;
 
     void Start ()
     {
         power = 0;
         isCharging = false;
         isMoving = false;
+        _agent = GetComponent<NavMeshAgent> ();
+        _agent.SetDestination (destination.transform.position);
+       
+        nextTarget = _agent.steeringTarget;
+        hasNextTarget = true;
+        rotate = true;
+        rotation = 0.3f;
     }
 
+    void rotateAI()
+    {
+        float step = 0;
+        if (!isMoving && rotate) {
+            angle = Vector3.Angle(transform.forward, (nextTarget - transform.position));
+
+           // if(angle > 100)
+           //     rotation = rotation * -1;
+            step = 180 * Time.deltaTime * rotation;
+            this.transform.Rotate (new Vector3 (0, 1, 0), step);
+            if(Mathf.Abs(angle) <= 1) 
+                rotate = false;
+        }
+        print (nextTarget +" : "+transform.position+" : "+transform.forward+" : "+angle+" : "+rotate+" : "+this.rigidbody.velocity+" : "+isMoving+" : "+step);
+    }
+    void setNextTarget()
+    {
+
+        if (nextTarget != _agent.steeringTarget) {
+            this.rigidbody.velocity = Vector3.zero;
+            nextTarget = _agent.steeringTarget;
+        }
+    }
     void Update ()
     {
+
         Vector3 vNow = this.rigidbody.velocity;
-        if (vNow.magnitude < 0.001) {
+        if (vNow.magnitude <= 0.1) {
             isMoving = false;
+            this.rigidbody.velocity = Vector3.zero;
+    
+            setNextTarget();
         }
 
 //        if (!isMoving) {
@@ -47,12 +89,10 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate ()
     {
-
-        if (!isMoving) {
-            float rotateLeft = Input.GetAxis ("Horizontal");
-            this.transform.Rotate (new Vector3 (0, 1, 0), rotateLeft * 180 * Time.deltaTime);
-        }
+        float step = 0;
+        rotateAI ();
         
+
     }
 
     void OnCollisionEnter(Collision other) {
@@ -67,6 +107,7 @@ public class PlayerController : MonoBehaviour
     {
         if (!isFinish) {
             isMoving = true;
+            rotate = true;
             Vector3 impulse = this.transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, 0, this.rigidbody.mass * power));
             this.rigidbody.AddForce (impulse, ForceMode.Impulse);
         }

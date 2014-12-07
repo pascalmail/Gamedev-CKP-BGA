@@ -20,7 +20,7 @@ public class PowerBarController : MonoBehaviour {
 
     void FixedUpdate()
     {
-        print (fController.isFinish);
+        //print (fController.isFinish);
         if (!pController.isMoving && !fController.isFinish) {
             if (bar >= 60 || bar < 0) {
                 barSpeed = barSpeed * -1;
