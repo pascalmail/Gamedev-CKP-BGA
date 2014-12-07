@@ -3,7 +3,7 @@ using System.Collections;
 
 public class PowerBarController : MonoBehaviour {
 
-    public PlayerController pController;
+    public AIController aiController;
     public FinishController fController;
     public Texture2D image;
     public Texture2D emptyBarTexture;
@@ -21,7 +21,7 @@ public class PowerBarController : MonoBehaviour {
     void FixedUpdate()
     {
         //print (fController.isFinish);
-        if (!pController.isMoving && !fController.isFinish) {
+        if (!aiController.isMoving && !fController.isFinish) {
             if (bar >= 60 || bar < 0) {
                 barSpeed = barSpeed * -1;
             }
@@ -32,10 +32,10 @@ public class PowerBarController : MonoBehaviour {
 
     void Update()
     {
-        if (!pController.isMoving) {
+        if (!aiController.isMoving) {
             //float filledWidth = pController.power / PlayerController.MAX_POWER * image.width;
             if(Input.GetKeyDown(KeyCode.Space)){
-                pController.move(bar, fController.isFinish);
+                aiController.move(bar, fController.isFinish);
             }
         }
     }
