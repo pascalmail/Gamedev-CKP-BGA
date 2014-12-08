@@ -11,16 +11,13 @@ public class TeleportController : MonoBehaviour {
     }
     void OnTriggerEnter(Collider collider)
     {
-
         GameObject other = collider.gameObject;
         print (other.tag);
         if (other.CompareTag ("Player")) {
-           
-            other.transform.position = destination.transform.position;
-        
+            other.SendMessage ("Warp", destination.transform.position);
         }
-        else if  (other.CompareTag ("NPC")) {
-            other.SendMessage("Warp",destination.transform.position);
+        else if  (other.CompareTag ("Enemy")) {
+            other.SendMessage ("Warp", destination.transform.position);
 
         }
     }

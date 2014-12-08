@@ -1,58 +1,70 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
 public class GameController : MonoBehaviour
 {
     public int turnNumber;
     public int actorPlaying;
-    //private GameObject[] actor;
-    //private PlayerController[] states;
-    public AIController aiController;
-    //public PlayerController pController;
+    public GameObject playing;
+    private GameObject[] players;
+    private GameObject[] enemies;
 
-    void Start() {
-        //actor = GameObject.FindGameObjectsWithTag("Player");
-        //states = GameObject.FindObjectsOfType<PlayerController> ();
-//        actor[0].GetC
-        turnNumber = 0;
-        actorPlaying = 1;
-        print ("game controller : start");
+    void Awake() {
+        players = GameObject.FindGameObjectsWithTag("Player");
 
-    }
+        enemies = GameObject.FindGameObjectsWithTag ("Enemy");
 
-    void switchTurn()
-    {
-        if (actorPlaying == 1) {
-            if (!aiController.isNowPlaying) {
-                aiController.SendMessage ("startTurn", true);
-            } else if (!aiController.isMoving && !aiController.rotate) {
-                aiController.SendMessage ("startTurn", false);
-                actorPlaying = 2;
-            }
-            //} else if (actorPlaying == 2 && !pController.isNowPlaying) {
-        } else if(actorPlaying == 2){
-            actorPlaying = 1;
+        if (players.Length > 0) {
+            playing = players [0];
+        }
+        else {
+            playing = enemies[0];
         }
     }
-
-    void Update() {
-        // find angle
-        switchTurn ();
-        // find power
-
-        // shoot
-
-        // save status
-
-        // change
+    void Start() {
+        StartCoroutine (Play ());
     }
-
-
+    void Update() {
+    }
+    IEnumerator Play() {
+        yield return new WaitForSeconds (2);
+        while (true) {
+            //print ("A");
+            foreach (GameObject p in players) {
+                playing = p;
+                //print (players.Length);
+                PlayerController pc = p.GetComponent<PlayerController>();
+                pc.isPlaying = true;
+                //print(pc.name+" is playing");
+                while (pc.isPlaying) {
+                    yield return 0;
+                    if (!p.GetComponent<PlayerController>().isPlaying) {
+                        //print("XX");
+                        break;
+                    }
+                }
+                //print ("B");
+            }
+            //print("C");
+            foreach(GameObject e in enemies) {
+                playing = e;
+                AIController ac = e.GetComponent<AIController>();
+                ac.isPlaying = true;
+                //print (ac.name+" is playing");
+                while (ac.isPlaying) {
+                    yield return 0;
+                    if (!ac.GetComponent<AIController>().isPlaying) {
+                        //print("XX");
+                        break;
+                    }
+                }
+                //ac.isPlaying = false;
+            }
+        }
+    }
     IEnumerable<int> test() {
         for(int i = 0; i < 5; ++i ) {
             yield return i;
         }
     }
-
 }
