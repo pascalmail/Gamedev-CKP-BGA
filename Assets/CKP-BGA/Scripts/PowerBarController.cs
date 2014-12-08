@@ -27,16 +27,20 @@ public class PowerBarController : MonoBehaviour {
             }
             bar = bar + barSpeed;
         }
+        print (bar);
 
     }
 
     void Update()
     {
-        if (!aiController.isMoving) {
+        if (!aiController.isMoving && !aiController.rotate) {
             //float filledWidth = pController.power / PlayerController.MAX_POWER * image.width;
-            if(Input.GetKeyDown(KeyCode.Space)){
-                aiController.move(bar, fController.isFinish);
-            }
+//            if(Input.GetKeyDown(KeyCode.Space)){
+//                aiController.move(bar, fController.isFinish);
+//            }
+            this.bar = Random.value * 60;
+            print (bar);
+            aiController.move(bar, fController.isFinish);
         }
     }
     void OnGUI()

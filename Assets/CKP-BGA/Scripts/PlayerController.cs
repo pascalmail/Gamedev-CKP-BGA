@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     public float speedy;
     public float speedz;
 
+    private float powerMultiplier;
+    private bool hasMultiplier;
     void Start ()
     {
         power = 0;

@@ -9,17 +9,21 @@ public class AIController : MonoBehaviour
     public bool isCharging;
     public bool isMoving;
     public GameObject destination;
-    
+    public bool isNowPlaying;
+    public bool rotate;
+
     private NavMeshAgent _agent;
     private Vector3 nextTarget;
     private bool hasNextTarget;
-    private bool rotate;
+
     private float angle;
     private float rotation;
     private float powerMultiplier;
     private bool hasMultiplier;
+
     void Start ()
     {
+        isNowPlaying = false;
         power = 0;
         isCharging = false;
         isMoving = false;
@@ -33,6 +37,12 @@ public class AIController : MonoBehaviour
         rotate = true;
         rotation = 0.3f;
     }
+
+    void startTurn(bool flag)
+    {
+        isNowPlaying = flag;
+    }
+
     void Warp(Vector3 target)
     {
        
@@ -42,7 +52,7 @@ public class AIController : MonoBehaviour
         print ("Warp");
     }
 
-    void etPowerMultiplier(float multiplier)
+    void setPowerMultiplier(float multiplier)
     {
         hasMultiplier = true;
         powerMultiplier = multiplier;
@@ -52,15 +62,16 @@ public class AIController : MonoBehaviour
     {
         float step = 0;
         if (!isMoving && rotate) {
-            angle = Vector3.Angle(transform.forward, (nextTarget - transform.position));
+            angle = Vector3.Angle (transform.forward, (nextTarget - transform.position));
 
             step = 180 * Time.deltaTime * rotation;
             this.transform.Rotate (new Vector3 (0, 1, 0), step);
-            if(Mathf.Abs(angle) <= 1) 
+            if (Mathf.Abs (angle) <= 1) 
                 rotate = false;
         }
         //print (nextTarget +" : "+transform.position+" : "+transform.forward+" : "+angle+" : "+rotate+" : "+this.rigidbody.velocity+" : "+isMoving+" : "+step);
     }
+
     void setNextTarget()
     {
         if (nextTarget != _agent.steeringTarget) {
@@ -68,6 +79,7 @@ public class AIController : MonoBehaviour
             nextTarget = _agent.steeringTarget;
         }
     }
+
     void Update ()
     {
         
@@ -80,11 +92,12 @@ public class AIController : MonoBehaviour
         }
 
     }
-    
-    
+
     void FixedUpdate ()
     {
+        if (isNowPlaying) {
             rotateAI ();
+        }
     }
     
     void OnCollisionEnter(Collision other) {
