@@ -32,12 +32,12 @@ public class PowerBarController : MonoBehaviour {
 
     void Update()
     {
-        if (!aiController.isMoving) {
+        //if (!aiController.isMoving) {
             //float filledWidth = pController.power / PlayerController.MAX_POWER * image.width;
             if(Input.GetKeyDown(KeyCode.Space)){
-                aiController.move(bar, fController.isFinish);
+                //aiController.move(bar, fController.isFinish);
             }
-        }
+        //}
     }
     void OnGUI()
     {   

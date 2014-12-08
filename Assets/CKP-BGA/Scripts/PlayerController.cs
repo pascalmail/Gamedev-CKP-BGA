@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     void Update ()
     {
         if (isPlaying) {
+
             if (!isMoving) {
                 if (Input.GetButtonDown ("Jump")) {
                     isCharging = true;
@@ -50,7 +51,7 @@ public class PlayerController : MonoBehaviour
                 if (power > MAX_POWER) {
                     power = MAX_POWER;
                 
-                }
+            }
             } else {
                 power = 0;
             }
@@ -64,9 +65,12 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate ()
     {
-        if (!isMoving) {
-            float rotateLeft = Input.GetAxis ("Horizontal");
-            this.transform.Rotate (new Vector3 (0, 1, 0), rotateLeft * 180 * Time.deltaTime);
+        if (isPlaying) {
+            if (!isMoving) {
+                float rotateLeft = Input.GetAxis ("Horizontal");
+                print(rotateLeft);
+                this.transform.Rotate (new Vector3 (0, 1, 0), rotateLeft * 180 * Time.deltaTime);
+            }
         }
         
     }

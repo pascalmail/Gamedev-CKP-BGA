@@ -1,6 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+/*
+ * x = 180*n
+ * 360 = 180*2t
+ * 
+ * n = x*2t/180
+ * 
+ * */
+
 public class AIController : MonoBehaviour
 {
     
@@ -14,10 +22,11 @@ public class AIController : MonoBehaviour
     private NavMeshAgent _agent;
     private Vector3 nextTarget;
     private bool hasNextTarget;
-    private bool rotate;
-    private float angle;
-    private float rotation;
-    
+
+    private float angleFull;
+    private float angleLeft;
+    private bool neg;
+
     void Start ()
     {
         power = 0;
@@ -29,42 +38,45 @@ public class AIController : MonoBehaviour
         
         nextTarget = _agent.steeringTarget;
         hasNextTarget = true;
-        rotate = true;
-        rotation = 0.3f;
-    }
-    
-    void rotateAI()
-    {
-        float step = 0;
-        if (!isMoving && rotate) {
-            angle = Vector3.Angle(transform.forward, (nextTarget - transform.position));
 
-            step = 180 * Time.deltaTime * rotation;
-            this.transform.Rotate (new Vector3 (0, 1, 0), step);
-            if(Mathf.Abs(angle) <= 1) 
-                rotate = false;
-        }
-        print (nextTarget +" : "+transform.position+" : "+transform.forward+" : "+angle+" : "+rotate+" : "+this.rigidbody.velocity+" : "+isMoving+" : "+step);
+        angleLeft = Vector3.Angle(transform.forward, (_agent.steeringTarget - transform.position));
+        angleFull = angleLeft;
+        neg = Vector3.Cross((_agent.steeringTarget - transform.position), transform.forward).z < 0 ;
     }
+
     void setNextTarget()
     {
         if (nextTarget != _agent.steeringTarget) {
-            this.rigidbody.velocity = Vector3.zero;
-            nextTarget = _agent.steeringTarget;
+            forceStop();
         }
     }
     void Update ()
     {
         if (isPlaying) {
-            Vector3 vNow = this.rigidbody.velocity;
-            if (vNow.magnitude <= 0.1) {
-                isMoving = false;
-                isPlaying = false;
-                this.rigidbody.velocity = Vector3.zero;
-            
-                setNextTarget ();
+            if (!isMoving) {
+                // update power
+
+
+            } else {
+                Vector3 vNow = this.rigidbody.velocity;
+                print(vNow.magnitude);
+                if (vNow.magnitude <= 0.1) {
+
+                    isMoving = false;
+                    isPlaying = false;
+
+                    forceStop();
+
+
+                    setNextTarget ();
+                    angleLeft = Vector3.Angle(transform.forward, (_agent.steeringTarget - transform.position));
+                    neg = Vector3.Cross((_agent.steeringTarget - transform.position), transform.forward).z < 0 ;
+                    angleFull = angleLeft;
+                }
             }
         }
+
+
 
     }
     
@@ -72,25 +84,57 @@ public class AIController : MonoBehaviour
     void FixedUpdate ()
     {
         if (isPlaying) {
-            rotateAI ();
+
+            if (!isMoving) {
+                float angle = angleFull*Time.deltaTime;
+
+
+                if (neg) {
+                    this.transform.Rotate (new Vector3 (0, -1, 0), angle);
+                    angleLeft -= angle;
+                }
+                else {
+                    this.transform.Rotate (new Vector3 (0, 1, 0), angle);
+                    angleLeft += angle;
+                }
+
+                print (angleLeft);
+                if (Mathf.Abs(angleLeft) < angle ) isMoving = true;
+
+            }
         }
+
     }
     
     void OnCollisionEnter(Collision other) {
         if (other.gameObject.tag.Equals("Wall")) {
             //            Vector3 tempV = this.rigidbody.velocity;
             //            this.rigidbody.velocity = Vector3.Reflect(tempV, transform.norm);
-            this.rigidbody.velocity = Vector3.zero;
+
+
+            forceStop();
+
+
+            isMoving = false;
             //this.rigidbody.isKinematic = true;
         }
     }
-    public void move(float power, bool isFinish)
-    {
-        if (!isFinish) {
-            isMoving = true;
-            rotate = true;
-            Vector3 impulse = this.transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, 0, this.rigidbody.mass * power));
-            this.rigidbody.AddForce (impulse, ForceMode.Impulse);
-        }
+
+    void forceStop() {
+        _agent.Stop(true);
+        rigidbody.isKinematic = false;
+        this.rigidbody.velocity = Vector3.zero;
+        this._agent.velocity = Vector3.zero;
+        _agent.Resume();
+        rigidbody.isKinematic = true;
     }
+//    public void move(float power, bool isFinish)
+//    {
+//        if (!isFinish) {
+//            isMoving = true;
+//            //rotate = true;
+//            Vector3 impulse = this.transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, 0, this.rigidbody.mass * power));
+//            this.rigidbody.AddForce (impulse, ForceMode.Impulse);
+//        }
+//    }
 }
