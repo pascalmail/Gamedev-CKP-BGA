@@ -16,7 +16,8 @@ public class AIController : MonoBehaviour
     private bool rotate;
     private float angle;
     private float rotation;
-    
+    private float powerMultiplier;
+    private bool hasMultiplier;
     void Start ()
     {
         power = 0;
@@ -24,13 +25,29 @@ public class AIController : MonoBehaviour
         isMoving = false;
         _agent = GetComponent<NavMeshAgent> ();
         _agent.SetDestination (destination.transform.position);
-        
+
+        hasMultiplier = false;
+
         nextTarget = _agent.steeringTarget;
         hasNextTarget = true;
         rotate = true;
         rotation = 0.3f;
     }
-    
+    void Warp(Vector3 target)
+    {
+       
+        _agent.Warp (target);
+       
+        _agent.SetDestination (destination.transform.position);
+        print ("Warp");
+    }
+
+    void etPowerMultiplier(float multiplier)
+    {
+        hasMultiplier = true;
+        powerMultiplier = multiplier;
+        print ("Boost");
+    }
     void rotateAI()
     {
         float step = 0;
@@ -42,7 +59,7 @@ public class AIController : MonoBehaviour
             if(Mathf.Abs(angle) <= 1) 
                 rotate = false;
         }
-        print (nextTarget +" : "+transform.position+" : "+transform.forward+" : "+angle+" : "+rotate+" : "+this.rigidbody.velocity+" : "+isMoving+" : "+step);
+        //print (nextTarget +" : "+transform.position+" : "+transform.forward+" : "+angle+" : "+rotate+" : "+this.rigidbody.velocity+" : "+isMoving+" : "+step);
     }
     void setNextTarget()
     {
@@ -83,6 +100,10 @@ public class AIController : MonoBehaviour
         if (!isFinish) {
             isMoving = true;
             rotate = true;
+            if(hasMultiplier){
+                power = power * powerMultiplier;
+                hasMultiplier = false;
+            }
             Vector3 impulse = this.transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, 0, this.rigidbody.mass * power));
             this.rigidbody.AddForce (impulse, ForceMode.Impulse);
         }
