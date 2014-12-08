@@ -8,6 +8,7 @@ public class AIController : MonoBehaviour
     public float power;
     public bool isCharging;
     public bool isMoving;
+    public bool isPlaying;
     public GameObject destination;
     
     private NavMeshAgent _agent;
@@ -22,6 +23,7 @@ public class AIController : MonoBehaviour
         power = 0;
         isCharging = false;
         isMoving = false;
+        isPlaying = false;
         _agent = GetComponent<NavMeshAgent> ();
         _agent.SetDestination (destination.transform.position);
         
@@ -53,13 +55,15 @@ public class AIController : MonoBehaviour
     }
     void Update ()
     {
-        
-        Vector3 vNow = this.rigidbody.velocity;
-        if (vNow.magnitude <= 0.1) {
-            isMoving = false;
-            this.rigidbody.velocity = Vector3.zero;
+        if (isPlaying) {
+            Vector3 vNow = this.rigidbody.velocity;
+            if (vNow.magnitude <= 0.1) {
+                isMoving = false;
+                isPlaying = false;
+                this.rigidbody.velocity = Vector3.zero;
             
-            setNextTarget();
+                setNextTarget ();
+            }
         }
 
     }
@@ -67,7 +71,9 @@ public class AIController : MonoBehaviour
     
     void FixedUpdate ()
     {
+        if (isPlaying) {
             rotateAI ();
+        }
     }
     
     void OnCollisionEnter(Collision other) {

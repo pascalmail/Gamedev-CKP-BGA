@@ -21,12 +21,12 @@ public class PowerBarController : MonoBehaviour {
     void FixedUpdate()
     {
         //print (fController.isFinish);
-        if (!aiController.isMoving && !fController.isFinish) {
+        //if (!aiController.isMoving && !fController.isFinish) {
             if (bar >= 60 || bar < 0) {
                 barSpeed = barSpeed * -1;
             }
             bar = bar + barSpeed;
-        }
+        //}
 
     }
 

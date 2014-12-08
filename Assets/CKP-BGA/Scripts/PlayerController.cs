@@ -9,6 +9,7 @@ public class PlayerController : MonoBehaviour
     public float power;
     public bool isCharging;
     public bool isMoving;
+    public bool isPlaying;
     public float speedx;
     public float speedy;
     public float speedz;
@@ -18,41 +19,46 @@ public class PlayerController : MonoBehaviour
         power = 0;
         isCharging = false;
         isMoving = false;
+        isPlaying = false;
     }
 
     void Update ()
     {
-        if (!isMoving) {
-            if (Input.GetButtonDown ("Jump")) {
-                isCharging = true;
+        if (isPlaying) {
+            if (!isMoving) {
+                if (Input.GetButtonDown ("Jump")) {
+                    isCharging = true;
+                }
+                if (Input.GetButtonUp ("Jump")) {
+                    isCharging = false;
+                    Vector3 impulse = this.transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, 0, this.rigidbody.mass * power));
+                    this.rigidbody.AddForce (impulse, ForceMode.Impulse);
+                    isMoving = true;
+                }
+            } else {
+                Vector3 vNow = this.rigidbody.velocity;
+                if (vNow.magnitude < 0.001) {
+                    this.rigidbody.velocity = Vector3.zero;
+                    isMoving = false;
+                    isPlaying = false;
+                }
             }
-            if (Input.GetButtonUp ("Jump")) {
-                isCharging = false;
-                Vector3 impulse = this.transform.localToWorldMatrix.MultiplyVector (new Vector3 (0, 0, this.rigidbody.mass * power));
-                this.rigidbody.AddForce (impulse, ForceMode.Impulse);
-                isMoving = true;
-            }
-        } else {
-            Vector3 vNow = this.rigidbody.velocity;
-            if (vNow.magnitude < 0.001) {
-                this.rigidbody.velocity = Vector3.zero;
-                isMoving= false;
-            }
-        }
+        
 
-        if (isCharging) {
-            power += MAX_POWER * Time.deltaTime;
-            if (power > MAX_POWER) {
-                power = MAX_POWER;
+            if (isCharging) {
+                power += MAX_POWER * Time.deltaTime;
+                if (power > MAX_POWER) {
+                    power = MAX_POWER;
                 
+                }
+            } else {
+                power = 0;
             }
-        } else {
-            power = 0;
+            Vector3 tmp = this.transform.localToWorldMatrix.MultiplyVector (this.rigidbody.velocity);
+            speedx = tmp.x;
+            speedy = tmp.y;
+            speedz = tmp.z;
         }
-        Vector3 tmp = this.transform.localToWorldMatrix.MultiplyVector (this.rigidbody.velocity);
-        speedx = tmp.x;
-        speedy = tmp.y;
-        speedz = tmp.z;
     }
 
 

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -6,31 +6,40 @@ public class GameController : MonoBehaviour
 {
     public int turnNumber;
     public int actorPlaying;
-    private GameObject[] actor;
-    private PlayerController[] states;
+    private GameObject[] players;
+    private GameObject[] enemies;
+
+
+    void Awake() {
+        players = GameObject.FindGameObjectsWithTag("Player");
+        enemies = GameObject.FindGameObjectsWithTag ("Enemy");
+    }
+
 
     void Start() {
-        actor = GameObject.FindGameObjectsWithTag("Player");
-        states = GameObject.FindObjectsOfType<PlayerController> ();
-//        actor[0].GetC
-
+        StartCoroutine (Play ());
     }
 
 
+    IEnumerator Play() {
+        while (true) {
+            foreach (GameObject p in players) {
+                PlayerController pc = p.GetComponent<PlayerController>();
+                pc.isPlaying = true;
 
-    void Update() {
+                while (pc.isPlaying) {}
 
-        // find angle
+            }
 
-        // find power
+            foreach(GameObject e in enemies) {
+                AIController ac = e.GetComponent<AIController>();
+                ac.isPlaying = true;
 
-        // shoot
+                while (ac.isPlaying) {}
 
-        // save status
-
-        // change
+            }
+        }
     }
-
 
     IEnumerable<int> test() {
         for(int i = 0; i < 5; ++i ) {
